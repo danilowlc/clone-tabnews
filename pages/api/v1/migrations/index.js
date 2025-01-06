@@ -1,32 +1,38 @@
 import migrationRunner from "node-pg-migrate";
 import { join } from "node:path";
+import database from "infra/database.js";
 
-async function status(reqest, response) {
+export default async function migrations(reqest, response) {
+  const dbClient = await database.getNewClient();
+  const defaultMigrationsOptions = {
+    dbClient: dbClient,
+    dryRun: true,
+    dir: join("infra", "migrations"),
+    direction: "up",
+    verbose: true,
+    migrationsTable: "pgmigrations",
+  };
+
   if (reqest.method === "GET") {
-    const migrations = await migrationRunner({
-      databaseUrl: process.env.DATABASE_URL,
-      dryRun: true,
-      dir: join("infra", "migrations"),
-      direction: "up",
-      verbose: true,
-      migrationsTable: "pgmigrations",
-    });
-    response.status(200).json(migrations);
+    const pendingMigrations = await migrationRunner(defaultMigrationsOptions);
+    await dbClient.end();
+    response.status(200).json(pendingMigrations);
   }
 
   if (reqest.method === "POST") {
-    const migrations = await migrationRunner({
-      databaseUrl: process.env.DATABASE_URL,
+    const migratedMigrations = await migrationRunner({
+      ...defaultMigrationsOptions,
       dryRun: false,
-      dir: join("infra", "migrations"),
-      direction: "up",
-      verbose: true,
-      migrationsTable: "pgmigrations",
     });
-    response.status(200).json(migrations);
+
+    await dbClient.end();
+
+    if (migratedMigrations.length > 0) {
+      return response.status(201).json(migratedMigrations);
+    }
+
+    response.status(200).json(migratedMigrations);
   }
 
   return response.status(405).end();
 }
-
-export default status;
