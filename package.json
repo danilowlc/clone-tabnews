@@ -10,7 +10,7 @@
     "services:stop": "docker compose -f infra/compose.yaml stop",
     "lint:check": "prettier --check .",
     "lint:fix": "prettier --write .",
-    "test": "npm run services:up && npm run wait-for-postgres && concurrently -n next,jest --hide next \"next dev\" \"jest --runInBand\"",
+    "test": "npm run services:up && npm run wait-for-postgres && concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand\"",
     "test:watch": "jest --watchAll --runInBand",
     "migration:create": "node-pg-migrate --migrations-dir infra/migration create",
     "migration:up": "node-pg-migrate -m infra/migration --envPath .env.development up",
@@ -20,6 +20,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "async-retry": "^1.3.3",
     "dotenv": "^18.0.9",
     "dotenv-expand": "^1000.0.0",
     "next": "^16.4.0",
