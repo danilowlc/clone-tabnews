@@ -28,10 +28,8 @@ async function getNewClient() {
   return client;
 }
 
-export default {
-  query,
-  getNewClient,
-};
+const database = { query, getNewClient };
+export default database;
 
 function getSSLValues() {
   return process.env.NODE_ENV === "production" ? true : false;
