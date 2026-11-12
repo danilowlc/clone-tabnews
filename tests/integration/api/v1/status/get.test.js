@@ -16,7 +16,7 @@ describe("GET /api/v1/status", () => {
       expect(responseBody.updated_at).toEqual(parsedUpdateAt);
 
       expect(responseBody.depedencies.database.version).toEqual(
-        "18.6 (Debian 18.6-1.pgdg13+2)",
+        "18.7 (Debian 18.7-1.pgdg13+2)",
       );
 
       expect(responseBody.depedencies.database.max_connections).toEqual(100);
