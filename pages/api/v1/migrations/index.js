@@ -15,7 +15,7 @@ export default async function migrations(request, response) {
     const defaultMigrationOptions = {
       dbClient: dbClient,
       dryRun: true,
-      dir: resolve("infra", "migration"),
+      dir: resolve(process.cwd(), "infra", "migration"),
       direction: "up",
       verbose: true,
       migrationsTable: "pgmigrations",
